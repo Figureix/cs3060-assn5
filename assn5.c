@@ -10,6 +10,7 @@ Originality Disclaimer: The following code we have written under our own efforts
 
 #include <stdio.h>
 
+
 int main(int argc, char *argv[]){
 		printf("Hello World!\n");
 
@@ -51,3 +52,12 @@ int count = i;
 	return 0;
 }
 
+
+// Make my Module/Function for STRF
+void STRF(int passinthearraysfrommain){
+	// my arrays are essentially constatns that I will compare against.
+	// Declare my variable for keeping track of numbers/times/clocks
+	// Declare my queue(s) for keeping track of jobs.
+	
+	
+}
