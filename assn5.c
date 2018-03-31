@@ -12,52 +12,82 @@ Originality Disclaimer: The following code we have written under our own efforts
 
 
 int main(int argc, char *argv[]){
-		printf("Hello World!\n");
+	printf("Hello World!\n");
 
-//arrays to hold the process run-time and the time the process was added to the ready queue
-int run_time[50];
-int ready_q_add[50];
+	//arrays to hold the process run-time and the time the process was added to the ready queue
+	int run_time[100];
+	int ready_q_add[100];
 
-//open the file
-FILE *fp = stdin;
-if(argc > 1)
-{
-fp = fopen(argv[1], "r");
-        if(fp==NULL)
-                {
+	//open the file
+	FILE *fp = stdin;
+	if(argc > 1){
+		fp = fopen(argv[1], "r");
+        if(fp==NULL){
                 perror("error opening file");
                 return -1;
-                }
-}
+        }
+	}
 
-//while loop index
-int i = 0;
-int number;
+	//while loop index
+	int i = 0;
+	int number;
 
-//read run times into arrays
-while(fscanf(fp, "%d", &number) != EOF)
-{
-ready_q_add[i] = number;
-//read a new number
-fscanf(fp, "%d", &number);
-run_time[i] = number;
-i++;
-}
-//number of processes is half of i
-int count = i;
+	//read run times into arrays
+	while(fscanf(fp, "%d", &number) == 1){
+		ready_q_add[i] = number;
+		//read a new number
+		fscanf(fp, "%d", &number);
+		run_time[i] = number;
+		i++;
+	}
+	//number of processes is half of i
+	int count = i;
 
-//start with first come first serve
-//FCFS(run_time, ready_q_add, count);
+	// -------- Send Arrays to Functions/Modules ----------------
+	//start with first come first serve
+	//FCFS(run_time, ready_q_add, count);
+	STRF(run_time, ready_q_add, count);
 
 	return 0;
 }
 
 
 // Make my Module/Function for STRF
-void STRF(int passinthearraysfrommain){
+void STRF(int *run_remin, int *submit_q, int count){
 	// my arrays are essentially constatns that I will compare against.
-	// Declare my variable for keeping track of numbers/times/clocks
 	// Declare my queue(s) for keeping track of jobs.
+	int readyQ[100];
+	int runLeft[100];
+	int firstRun[100];
+	int finish[100];
+	// Declare my variable for keeping track of numbers/times/clocks
+	int clk = submit_q[0], pclk = 0, debt, pick;
+	
+	// start doing calculations.
+	
 	
 	
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
