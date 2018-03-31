@@ -91,3 +91,12 @@ void STRF(int *run_remin, int *submit_q, int count){
 
 
 
+=======
+void STRF(int passinthearraysfrommain){
+	// my arrays are essentially constatns that I will compare against.
+	// Declare my variable for keeping track of numbers/times/clocks
+	// Declare my queue(s) for keeping track of jobs.
+	
+	
+}
+>>>>>>> 4b2cefae83b415bd360da05c4facd8b5d462acfd
