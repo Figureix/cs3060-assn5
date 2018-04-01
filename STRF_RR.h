@@ -6,19 +6,141 @@
 void STRF(int *reqRunTime, int *submit_q, int count){
 	// my arrays are essentially constatns that I will compare against.
 	// Declare my queue(s) for keeping track of jobs.
-	int jobQ[100];
 	int runLeft[100];
 	int firstRun[100];
 	int finish[100];
 	// Declare my variable for keeping track of numbers/times/clocks
-	int clk, pclk = 0, debt, pick = 0, i = 0;
+	int clk, nclk = 0, jobQ = 0, pick = 0, i = 0, j = 0, debt = 0;
 	
 	// start doing calculations.
 	for (i; i < count; i++;){
 		// set the clock to current/submitted job. Add job to que along with required time
 		clk = submit_q[i];;
 		runLeft[i] = reqRunTime[i]; 
-
+		jobQ++; // a new job has shown up, add it to the Q
+		j = 0;
+		
+		// look ahead for next clock
+		if ((i + 1) >= count) {
+			// We must be at the end of our process list.
+			// We will do addition to the clock instead.
+			while (jobQ > 0){
+				j = 0;
+				// Pick shortest job from jobQ
+				while (runLeft[j] == 0 && j <= i) j++;
+				pick = i;
+				while (runLeft[pick] == 0 && pick > j) pick--;
+				for (j; j <= pick; j++) if (runLeft[j] < runLeft[pick] && runLeft[j] != 0) pick = j;
+				// Check if job has run yet (get 1st run)
+				if (runLeft[pick] == reqRunTime[pick]) firstRun[pick] = clk;
+				// move clock forward
+				clk += runLeft[pick];
+				// job is done
+				finish[pick] = clk;
+				runLeft[pick] = 0;
+				jobQ--;
+			}
+		}
+		else {
+			// we can use next process time
+			nclk = reqRunTime[i + 1];
+			// calc time difference
+			debt = nclk - clk;
+			
+			// Pick shortest job from jobQ
+			while (runLeft[j] == 0 && j <= i) j++;
+			pick = i;
+			while (runLeft[pick] == 0 && pick > j) pick--;
+			for (j; j <= pick; j++) if (runLeft[j] < runLeft[pick] && runLeft[j] != 0) pick = j;
+			// pick has been set.
+			// Check if job has run yet (get 1st run)
+			if (runLeft[pick] == reqRunTime[pick]) firstRun[pick] = clk;
+			
+			
+			// check, negative or zero, a job has finished, another job can run before next job shows up.
+			if ((debt - runLeft[pick]) <= 0){
+				// if runLeft[pick] == 0, job finsihed.
+				// update finish times
+				if ((debt - runLeft[pick]) == 0) {
+					finish[pick] = clk + debt;
+					jobQ--;
+				}
+				else runLeft[pick] = (debt - runLeft[pick]) * -1;
+			}
+			// check, positive. Remaing time left before next job
+			else {
+				// positive time lift, picked job has finished before next clock/job arrival.
+				// set finish time
+				finish[pick] = clk + runLeft[pick];
+				jobQ--;
+				clk += runLeft[pick];
+				debt -= runLeft[pick];
+				// set runleft = 0
+				runLeft[pick] = 0;
+				
+				
+				// run any other remaining jobs if any
+				while (jobQ > 0 && debt >= 0){
+					// Get next shortest job
+					j = 0;
+					while (runLeft[j] == 0 && j <= i) j++;
+					pick = i;
+					while (runLeft[pick] == 0 && pick > j) pick--;
+					for (j; j <= pick; j++) if (runLeft[j] < runLeft[pick] && runLeft[j] != 0) pick = j;
+					// we have next job.
+					// check if it has been run yet. Set start time
+					if (runLeft[pick] == reqRunTime[pick]) firstRun[pick] = clk;
+					// check if job run time exceeds nextclock
+					if ((debt - runLeft[pick]) <= 0){
+						// if runLeft[pick] == 0, job finsihed.
+						// update finish times
+						if ((debt - runLeft[pick]) == 0) {
+							finish[pick] = clk + debt;
+							jobQ--;
+						}
+						else {
+							runLeft[pick] = (debt - runLeft[pick]) * -1;
+							break; // we clearly have a gap in processes
+						}
+					}
+					else {
+						// else, current processes will end before nextclock
+						// set finish time for process
+						finish[pick] = clk + runLeft[pick];
+						// move clk forward
+						clk += runLeft[pick];
+						// decrement jobQ
+						jobQ--;
+						// calc debt
+						debt -= runLeft[pick];
+						// set runLeft time
+						runLeft[pick] = 0;
+					}
+				}
+			}
+		}
+	}
+	
+	// Lets round up all the stats and output to terminal
+	i = 0;
+	j = 0;
+	for (i; i < count; i ++) {
+		printf("submit: %d\treqRun: %d\t1stRun: %d\tfinish: %d\n", submit_q[i], reqRunTime[i], firstRun[i], finish[i]);
+		
+	}
+}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
+		
 		if (i == 0) {
 			firstRun[i] = clk;
 		}
@@ -79,6 +201,7 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 		}
 	}
 }
+*/
 
 
 void RoundRobin(int *reqRunTime, int *submit_q, int count){
