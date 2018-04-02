@@ -9,7 +9,7 @@ Originality Disclaimer: The following code we have written under our own efforts
 */
 
 #include <stdio.h>
-#include "STRF_RR.h"
+//#include "STRF_RR.h"
 
 int main(int argc, char *argv[]){
 	//arrays to hold the process run-time and the time the process was added to the ready queue
@@ -44,6 +44,7 @@ int main(int argc, char *argv[]){
 	//start with first come first serve
 	//FCFS(run_time, ready_q_add, count);
 	STRF(run_time, ready_q_add, count);
+	RoundRobin(run_time, ready_q_add, count);
 
 	return 0;
 }
