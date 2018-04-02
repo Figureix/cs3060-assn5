@@ -12,8 +12,6 @@ Originality Disclaimer: The following code we have written under our own efforts
 #include "STRF_RR.h"
 
 int main(int argc, char *argv[]){
-	printf("Hello World!\n");
-
 	//arrays to hold the process run-time and the time the process was added to the ready queue
 	int run_time[100];
 	int ready_q_add[100];
