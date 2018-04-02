@@ -9,6 +9,9 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 	int runLeft[100];
 	int firstRun[100];
 	int finish[100];
+	int TA[100];
+	int Wait[100];
+	int Resp[100];
 	// Declare my variable for keeping track of numbers/times/clocks
 	int clk, nclk = 0, jobQ = 0, pick = 0, i = 0, j = 0, debt = 0;
 	
@@ -17,6 +20,9 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 		runLeft[i] = 0;
 		firstRun[i] = 0;
 		finish[i] = 0;
+		TA[i] = 0;
+		Wait[i] = 0;
+		Resp[i] = 0;
 	}
 	i = 0;
 	
@@ -25,25 +31,57 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 	for (i; i < count; i++){
 		// set the clock to current/submitted job. Add job to que along with required time
 		clk = submit_q[i];
-		
+				
 		runLeft[i] = reqRunTime[i];
+		
+		
+		printf("\n32 i:%d\t clk:%d\t runleft[i]:%d\njobQ(preinc):%d\t", i, clk, runLeft[i], jobQ);
+		
+		
+		
 		jobQ++; // a new job has shown up, add it to the Q
 		
+		
+		printf(" jobQ(postinc):%d\n\nj:%d\t", jobQ, j);
+		
+		j = 0;
 		// Pick a job
 		while (runLeft[j] == 0 && j <= i) j++;
+		
+		printf("\nIN J PICK\t j:%d\t\t while (runLeft[j] == 0 && j <= i)::%d\n", j, runLeft[j] == 0 && j <= i);
+		
 		pick = i;
 		while (runLeft[pick] == 0 && pick > j) pick--;
 		for (j; j <= pick; j++) if (runLeft[j] < runLeft[pick] && runLeft[j] != 0) pick = j;
 		// We have picked a job
 		
+		
+		printf("50 pick:%d\nrunLeft[pick]:%d\t reqRunTime[pick]:%d\t (pre)firstRun[pick]:%d\t", pick, runLeft[pick], reqRunTime[pick], firstRun[pick]);
+		
+		
+		
 		// Check and set first run time
 		if (runLeft[pick] == reqRunTime[pick]) firstRun[pick] = clk;
+		
+		
+		
+		printf(" (post)firstRun[pick]:%d\n\n", firstRun[pick]);
+		
+		
 		
 		// Evaluate clock times and runtime
 		// set nclk
 		if ((i + 1) < count) {
-			nclk = reqRunTime[i + 1];
+			nclk = submit_q[i + 1];
+			
+			
+			printf("\n\n69 IN \"(i + 1) < count\"\t nclk:%d\n", nclk);
+			
+			
 			if ((runLeft[pick] + clk) < nclk) {
+				
+				printf("74 IN \"(runLeft[pick] + clk) < nclk\"\t runLeft[pick] + clk:%d < nclk\n", runLeft[pick] + clk, nclk);
+				
 				// Job can run before next job arrives
 				// advance the clock
 				clk += runLeft[pick];
@@ -52,16 +90,25 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 				runLeft[pick] = 0;
 				jobQ--;
 				
+				printf("\n84 clk:%d\t finish[pick]:%d\t runLeft[pick]:%d\t jobQ:%d\n", clk, finish[pick], runLeft[pick], jobQ);
+				
+				
 				// find another job while jobs is > 0 and clk < nclk
 				while(jobQ > 0 && clk < nclk){
 					// get next shortest job
 					// Pick a job
+					j = 0;
 					while (runLeft[j] == 0 && j <= i) j++;
 					pick = i;
 					while (runLeft[pick] == 0 && pick > j) pick--;
 					for (j; j <= pick; j++) if (runLeft[j] < runLeft[pick] && runLeft[j] != 0) pick = j;
 					// check for first run
 					if (runLeft[pick] == reqRunTime[pick]) firstRun[pick] = clk;
+					
+					
+					printf("99 IN \"while(jobQ > 0 && clk < nclk)\"\npick:%d\t runLeft[pick]:%d\t reqRunTime[pick]:%d\t firstRun[pick]:%d\n", pick, runLeft[pick], reqRunTime[pick], firstRun[pick]);
+					
+					
 					// check if run goes past nclk
 					if ((runLeft[pick] + clk) < nclk) {
 						// update values
@@ -69,9 +116,19 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 						finish[pick] = clk;
 						runLeft[pick] = 0;
 						jobQ--;
+						
+						
+						printf("111 IN \"if ((runLeft[pick] + clk) < nclk)\"\nclk:%d\t finish[pick]:%d\t runLeft[pick]:%d\t jobQ:%d\n", clk, finish[pick], runLeft[pick], jobQ);
+						
+						
 					}else {
 						// run time will overflow nclk
 						runLeft[pick] = (runLeft[pick] + clk) - nclk;
+						
+						
+						printf("119 IN \"while...if...else\"\nclk:%d\t nclk:%d\t pick:%d\t runLeft[pick]:%d\t reqRunTime[pick]:%d\t firstRun[pick]:%d\n", clk, nclk, pick, runLeft[pick], reqRunTime[pick], firstRun[pick]);
+						
+						
 						break;
 					}
 				}
@@ -79,14 +136,31 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 				// runLeft[pick] + clk is greater than nclk
 				// job will run till next job arrives / preempts
 				runLeft[pick] = (runLeft[pick] + clk) - nclk;
+				
+				
+				printf("131 IN \"else...(runLeft[pick] + clk) < nclk\"\nrunLeft[pick] + clk - nclk:%d\n", runLeft[pick]);
+				
+				
+				
 			}
 		}else {
 			// we are at the end of the job list
+			
+			
+			printf("140 We are at the end of the job list\npick:%d\t clk:%d\t jobQ:%d\t runLeft[pick]:%d\t firstRun[pick]:%d\t finish[pick]:%d\n\n", pick, clk, jobQ, runLeft[pick], firstRun[pick], finish[pick]);
+			
+			
+			
 			do{
 				clk += runLeft[pick];
 				finish[pick] = clk;
 				runLeft[pick] = 0;
 				jobQ--;
+				
+				
+				printf("151 We are at... do{..\npick:%d\t clk:%d\t jobQ:%d\t runLeft[pick]:%d\t firstRun[pick]:%d\t finish[pick]:%d\n\n", pick, clk, jobQ, runLeft[pick], firstRun[pick], finish[pick]);
+				
+				
 				
 				// get next job and check first run
 				j = 0;
@@ -98,16 +172,33 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 				if (runLeft[pick] == reqRunTime[pick]) firstRun[pick] = clk;
 				
 			}while (jobQ > 0);
+			
+			printf("166 end...while....\npick:%d\t clk:%d\t jobQ:%d\t runLeft[pick]:%d\t firstRun[pick]:%d\t finish[pick]:%d\n\n", pick, clk, jobQ, runLeft[pick], firstRun[pick], finish[pick]);
 		}
 	}
 	// gather statistics
 	i = 0;
 	j = 0;
+	pick = 0;
+	debt = 0;
 	printf("\n\n\n");
 	for (i; i < count; i++) {
-		printf("submit: %d\treqRun: %d\t\t1stRun: %d\tfinish: %d\n", submit_q[i], reqRunTime[i], firstRun[i], finish[i]);
-		
+		printf("174 submit: %d\treqRun: %d\t\t1stRun: %d\tfinish: %d\n", submit_q[i], reqRunTime[i], firstRun[i], finish[i]);
+		TA[i] = finish[i] - submit_q[i];
+		Wait[i] = TA[i] - reqRunTime[i];
+		Resp[i] = firstRun[i] - submit_q[i];
 	}
+	i = 0;
+	for (i; i < count; i++) {
+		//printf("174 submit: %d\treqRun: %d\t\t1stRun: %d\tfinish: %d\n", submit_q[i], reqRunTime[i], firstRun[i], finish[i]);
+		j += TA[i];
+		pick += Wait[i];
+		debt += Resp[i];
+	}
+	j = j / i;
+	pick = pick / i;
+	debt = debt / i;
+	printf("TA(avg):%d\tWait(avg):%d\tResp(avg):%d\n", i, pick, debt);
 }
 	
 	
