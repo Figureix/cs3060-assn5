@@ -115,7 +115,7 @@ void STRF(int *reqRunTime, int *submit_q, int count){
 	TAav = TAav / i;
 	Waitav = Waitav / i;
 	Respav = Respav / i;
-	printf("TA(avg):%.2f\t\tWait(avg):%.2f\t\tResp(avg):%.2f\n", TAav, Waitav, Respav);
+	printf("\nShortest Time Remaing First -- coded by David Carlson\nAvg. T.A:%.2f\t\tAvg. Wait:%.2f\tAvg. Resp:%.2f\n", TAav, Waitav, Respav);
 }
 
 
@@ -131,7 +131,7 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 	int Wait[100];
 	int Resp[100];
 	// Declare my variable for keeping track of numbers/times/clocks
-	int clk, nclk = 0, jobQ = 0, pick = 0, i = 0, j = 0, timeQ = 100, debug = 0;
+	int clk, nclk = 0, jobQ = 0, pick = 0, i = 0, j = 0, timeQ = 100;
 	double TAav = 0, Waitav = 0, Respav = 0;
 	
 	// set all entries in arrays to zero
@@ -262,13 +262,13 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 		Waitav += Wait[i];
 		Respav += Resp[i];
 		
-		printf("submit_q[i]:%d\t\treqRunTime[i]:%d\t\tfirstRun[i]:%d\t\tfinish[i]:%d\t\tTA[i]:%d\tWait[i]:%d\tResp[i]:%d\n", submit_q[i], reqRunTime[i], firstRun[i], finish[i], TA[i], Wait[i], Resp[i]);
+		//printf("submit_q[i]:%d\t\treqRunTime[i]:%d\t\tfirstRun[i]:%d\t\tfinish[i]:%d\t\tTA[i]:%d\tWait[i]:%d\tResp[i]:%d\n", submit_q[i], reqRunTime[i], firstRun[i], finish[i], TA[i], Wait[i], Resp[i]);
 	}
-	printf("%f\t%f\t%f\n", TAav, Waitav, Respav);
+	//printf("%f\t%f\t%f\n", TAav, Waitav, Respav);
 	TAav = TAav / i;
 	Waitav = Waitav / i;
 	Respav = Respav / i;
-	printf("TA(avg):%.2f\t\tWait(avg):%.2f\t\tResp(avg):%.2f\n", TAav, Waitav, Respav);
+	printf("\nRound Robin with timeQ of 100 -- coded by David Carlson\nAvg. T.A:%.2f\t\tAvg. Wait:%.2f\tAvg. Resp:%.2f\n", TAav, Waitav, Respav);
 		
 	
 }
