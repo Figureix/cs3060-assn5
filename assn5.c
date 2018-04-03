@@ -9,6 +9,7 @@ Originality Disclaimer: The following code we have written under our own efforts
 */
 
 #include <stdio.h>
+//#include "STRF_RR.h"
 
 //function prologues
 void FCFS(int*, int*, int);
@@ -16,24 +17,20 @@ void SJF(int*, int*, int);
 
 
 int main(int argc, char *argv[]){
-	printf("Hello World!\n");
+	//arrays to hold the process run-time and the time the process was added to the ready queue
+	int run_time[100];
+	int ready_q_add[100];
 
-//arrays to hold the process run-time and the time the process was added to the ready queue
-int run_time[100];
-int ready_q_add[100];
-
-//open the file
-FILE *fp = stdin;
-if(argc > 1)
-{
-fp = fopen(argv[1], "r");
-        if(fp==NULL)
-                {
-                perror("error opening file");
-                return -1;
-                }
-}
-
+	//open the file
+	FILE *fp = stdin;
+	if(argc > 1){
+		fp = fopen(argv[1], "r");
+        if(fp==NULL){
+            perror("error opening file");
+            return -1;
+        }
+	}
+          
 //while loop index
 int i = 0;
 int number;
@@ -51,11 +48,20 @@ i++;
 //number of processes is i
 int count = i;
 
+// -------- Send Arrays to Functions/Modules ----------------
+//start with first come first serve
+//FCFS(run_time, ready_q_add, count);
+
+// Jason Sheetz  
 //start with first come first serve
 FCFS(run_time, ready_q_add, count);
-
 //shortest job first
 SJF(run_time, ready_q_add, count);
 
+// David Carlson
+STRF(run_time, ready_q_add, count);
+RoundRobin(run_time, ready_q_add, count);
+
 	return 0;
 }
+
