@@ -153,6 +153,7 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 		runLeft[i] = reqRunTime[i];
 		jobQ++; // a new job has shown up, add it to the Q
 		
+		if (pick == (i - 1)) j = i;
 		
 		
 		// Evaluate clock times and runtime
@@ -161,10 +162,10 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 		if ((i + 1) < count) {
 			nclk = submit_q[i + 1];
 			
-			printf("\n\n");
-			for (debug; debug <= i; debug++)	printf("***165 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-			debug = 0;
-			printf("\n\n");
+			//printf("\n\n");
+			//for (debug; debug <= i; debug++)	printf("***165 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+			//debug = 0;
+			//printf("\n\n");
 			
 			
 			// is the timeQ sooner than the next job??
@@ -173,19 +174,19 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 				// use the timeQ
 				// get the next job 
 				// loop through runLeft array looking for job
-				printf("171 while (runLeft[j % (i + 1)] == 0) j++;\n[runLeft[j % (i + 1)] == 0]:%d\n", runLeft[j % (i + 1)]);
-				for (debug; debug <= i; debug++)	printf("172 %d\ti:%d\t j:%d\t clk:%d\t nclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-				debug = 0;
+				//printf("171 while (runLeft[j % (i + 1)] == 0) j++;\n[runLeft[j % (i + 1)] == 0]:%d\n", runLeft[j % (i + 1)]);
+				//for (debug; debug <= i; debug++)	printf("172 %d\ti:%d\t j:%d\t clk:%d\t nclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+				//debug = 0;
 				//j++;
-				if (i == 0){
-					j = i;
-				}else {
-					while (runLeft[j] == 0) {
+				//if (i == 0){
+				//	j = i;
+				//}else {
+					while (runLeft[j] == 0 && i > 0) {
 						j = (j + 1) % (i + 1);
 						for (debug; debug <= i; debug++)	printf("180 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
 						debug = 0;
 					}
-				}
+				//}
 				pick = j; // we should have the next job OR the last job that had ran -- no new jobs added to array
 				//j++;
 				// Check and set first run time
@@ -197,11 +198,16 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 					runLeft[pick] -= timeQ;
 					clk += timeQ; // move clock forward
 					// timeQ expired, move to run next job
-					if (i > 0) {
-						j = (j + 1) % (i + 1);
-					}else j++;
-					for (debug; debug <= i; debug++)	printf("198 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-					debug = 0;
+					// check if runLeft is zero
+					if (runLeft[pick] == 0) {
+						finish[pick] = clk;
+						jobQ--;
+					}
+					//if (i > 0) {
+					//	j = (j + 1) % (i + 1);
+					//}//else j++;
+					//for (debug; debug <= i; debug++)	printf("198 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+					//debug = 0;
 				}else{
 					// runLeft is less than timeQ
 					// the job will finish within the timeQ
@@ -210,29 +216,29 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 					finish[pick] = clk;
 					runLeft[pick] = 0;
 					jobQ--;
-					if (i > 0) {
-						j = (j + 1) % (i + 1);
-					}else j++;
-					for (debug; debug <= i; debug++)	printf("211 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-					debug = 0;
+					//if (i > 0) {
+					//	j = (j + 1) % (i + 1);
+					//}//else j++;
+					//for (debug; debug <= i; debug++)	printf("211 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+					//debug = 0;
 				}
 			}
 			// time between jobs is less than a timeQ
 			while (clk < nclk && jobQ > 0){
 				// get next job
-				printf("218 while (runLeft[j % (i + 1)] == 0) j++;\t[runLeft[j % (i + 1)]:%d\n", runLeft[j % (i + 1)]);
-				for (debug; debug <= i; debug++)	printf("219 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-				debug = 0;
+				//printf("218 while (runLeft[j % (i + 1)] == 0) j++;\t[runLeft[j % (i + 1)]:%d\n", runLeft[j % (i + 1)]);
+				//for (debug; debug <= i; debug++)	printf("219 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+				//debug = 0;
 				//j++;
-				if (i == 0){
-					j = i;
-				}else {
-					while (runLeft[j] == 0) {
+				//if (i == 0){
+				//	j = i;
+				//}else {
+					while (runLeft[j] == 0 && i > 0) {
 						j = (j + 1) % (i + 1);
 						for (debug; debug <= i; debug++)	printf("227 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
 						debug = 0;
 					}
-				}
+				//}
 				pick = j; // we should have the next job OR the last job that had ran -- no new jobs added to array
 				//j++;
 				// check first run
@@ -243,12 +249,17 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 					// update runLeft
 					runLeft[pick] -= (nclk - clk);
 					clk += (nclk - clk);
-					if (i > 0) {
-						j = (j + 1) % (i + 1);
-					}else j++;
-					for (debug; debug <= i; debug++)	printf("244 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-					debug = 0;
-					break; // clk += (nclk - clk); should also cause while loop to end
+					// check if it zero'd
+					if (runLeft[pick] == 0) {
+						finish[pick] = clk;
+						jobQ--;
+					}
+					//if (i > 0) {
+					//	j = (j + 1) % (i + 1);
+					//}//else j++;
+					//for (debug; debug <= i; debug++)	printf("244 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+					//debug = 0;
+					//break; // clk += (nclk - clk); should also cause while loop to end
 				}else {
 					// runLeft is less than differnece between clks
 					// the job will finsih
@@ -256,33 +267,33 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 					finish[pick] = clk;
 					runLeft[pick] = 0;
 					jobQ--;
-					if (i > 0) {
-						j = (j + 1) % (i + 1);
-					}else j++;
-					for (debug; debug <= i; debug++)	printf("257 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-					debug = 0;
+					//if (i > 0) {
+					//	j = (j + 1) % (i + 1);
+					//}//else j++;
+					//for (debug; debug <= i; debug++)	printf("257 %d\ti:%d\t j:%d\t clk:%d\tnclk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, nclk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+					//debug = 0;
 				}
 			}
 		}else {
 			// there is no nclk, we must be at the end of job list
 			while (jobQ > 0){
 				// get next job
-				printf("\n\n");
-				for (debug; debug <= i; debug++)	printf("***271 %d\ti:%d\t j:%d\t clk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-				debug = 0;
-				printf("\n\n");
+				//printf("\n\n");
+				//for (debug; debug <= i; debug++)	printf("***271 %d\ti:%d\t j:%d\t clk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", debug, i, j, clk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+				//debug = 0;
+				//printf("\n\n");
 				//j++;
-				if (i == 0){
-					j = i;
-				}else {
-					while (runLeft[j] == 0) {
+				//if (i == 0){
+				//	j = i;
+				//}else {
+					while (runLeft[j] == 0 && i > 0) {
 						j = (j + 1) % (i + 1);
-						printf("173 j:%d\n", j);
+						//printf("173 j:%d\n", j);
 					}
-				}
+				//}
 				pick = j; // we should have the next job OR the last job that had ran -- no new jobs added to array
 				//j++;
-				printf("i:%d\tpick:%d\tjobQ:%d\t\tclk:%d\n", i, pick, jobQ, clk);
+				//printf("i:%d\tpick:%d\tjobQ:%d\t\tclk:%d\n", i, pick, jobQ, clk);
 				// check first run
 				if (runLeft[pick] == reqRunTime[pick]) firstRun[pick] = clk;
 				
@@ -292,21 +303,26 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 					runLeft[pick] -= timeQ;
 					// update clk
 					clk += timeQ;
-					if (i > 0) {
-						j = (j + 1) % (i + 1);
+					// check if zero'd
+					if (runLeft[pick] == 0) {
+						finish[pick] = clk;
+						jobQ--;
 					}
-					for (debug; debug <= i; debug++)	printf("292 i:%d\t j:%d\t clk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", i, j, clk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-					debug = 0;
+					//if (i > 0) {
+					//	j = (j + 1) % (i + 1);
+					//}
+					//for (debug; debug <= i; debug++)	printf("292 i:%d\t j:%d\t clk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", i, j, clk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+					//debug = 0;
 				}else {
 					clk += runLeft[pick];
 					finish[pick] = clk;
 					runLeft[pick] = 0;
 					jobQ--;
-					if (i > 0) {
-						j = (j + 1) % (i + 1);
-					}
-					for (debug; debug <= i; debug++)	printf("302 i:%d\t j:%d\t clk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", i, j, clk, runLeft[debug], reqRunTime[debug], jobQ, pick);
-					debug = 0;
+					//if (i > 0) {
+					//	j = (j + 1) % (i + 1);
+					//}
+					//for (debug; debug <= i; debug++)	printf("302 i:%d\t j:%d\t clk:%d\t runLeft[i]:%d\t reqRunTime[i]:%d\t jobQ:%d\t pick:%d\n", i, j, clk, runLeft[debug], reqRunTime[debug], jobQ, pick);
+					//debug = 0;
 				}
 				
 				
@@ -324,7 +340,10 @@ void RoundRobin(int *reqRunTime, int *submit_q, int count){
 		TAav += TA[i];
 		Waitav += Wait[i];
 		Respav += Resp[i];
+		
+		printf("submit_q[i]:%d\t\treqRunTime[i]:%d\t\tfirstRun[i]:%d\t\tfinish[i]:%d\t\tTA[i]:%d\tWait[i]:%d\tResp[i]\n", submit_q[i], reqRunTime[i], firstRun[i], finish[i], TA[i], Wait[i], Resp[i]);
 	}
+	printf("%f\t%f\t%f\n", TAav, Waitav, Respav);
 	TAav = TAav / i;
 	Waitav = Waitav / i;
 	Respav = Respav / i;
